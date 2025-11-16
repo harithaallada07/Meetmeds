@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477967333852",
+    "project_id": "meetmeds-bd7dc",
+    "storage_bucket": "meetmeds-bd7dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477967333852:android:aa4e343af28621c1eb7719",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.meetmeds"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZI9ROObkgTXMdttNTv2Zahd7akIHojZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
