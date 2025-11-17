@@ -1,6 +1,5 @@
 package uk.ac.tees.mad.meetmeds.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -11,26 +10,54 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+//private val DarkColorScheme = darkColorScheme(
+//    primary = Purple80,
+//    secondary = PurpleGrey80,
+//    tertiary = Pink80
+//)
+//
+//private val LightColorScheme = lightColorScheme(
+//    primary = Purple40,
+//    secondary = PurpleGrey40,
+//    tertiary = Pink40
+//
+//    /* Other default colors to override
+//    background = Color(0xFFFFFBFE),
+//    surface = Color(0xFFFFFBFE),
+//    onPrimary = Color.White,
+//    onSecondary = Color.White,
+//    onTertiary = Color.White,
+//    onBackground = Color(0xFF1C1B1F),
+//    onSurface = Color(0xFF1C1B1F),
+//    */
+//)
+
+// Define the Dark Color Scheme using the new colors
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = TealPrimaryDark,
+    onPrimary = OnTealPrimaryDark,
+    secondary = TealSecondaryDark,
+    onSecondary = OnTealSecondaryDark,
+    tertiary = TealTertiaryDark,
+    onTertiary = OnTealTertiaryDark,
+    background = TealBackgroundDark,
+    onBackground = OnTealBackgroundDark,
+    surface = TealSurfaceDark,
+    onSurface = OnTealSurfaceDark
 )
 
+// Define the Light Color Scheme using the new colors
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = TealPrimaryLight,
+    onPrimary = OnTealPrimaryLight,
+    secondary = TealSecondaryLight,
+    onSecondary = OnTealSecondaryLight,
+    tertiary = TealTertiaryLight,
+    onTertiary = OnTealTertiaryLight,
+    background = TealBackgroundLight,
+    onBackground = OnTealBackgroundLight,
+    surface = TealSurfaceLight,
+    onSurface = OnTealSurfaceLight
 )
 
 @Composable
