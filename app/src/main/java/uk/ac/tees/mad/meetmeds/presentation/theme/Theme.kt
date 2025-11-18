@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.meetmeds.ui.theme
+package uk.ac.tees.mad.meetmeds.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

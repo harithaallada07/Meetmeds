@@ -18,13 +18,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import uk.ac.tees.mad.meetmeds.ui.theme.MeetMedsTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        installSplashScreen().apply {
+            setOnExitAnimationListener { screen->
+                screen.iconView.animate()
+                    .alpha(0f)
+                    .setDuration(3000)
+                    .withEndAction {
+                        screen.remove()
+                    }.start()
+            }
+//            setKeepOnScreenCondition {
+//
+//            }
+        }
         setContent {
             MeetMedsTheme(dynamicColor = false) {
                 Scaffold(
