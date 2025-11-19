@@ -1,6 +1,6 @@
 package uk.ac.tees.mad.meetmeds.domain.model
 
-data class MeetMedsUser(
+data class UserProfile(
     val uid: String = "",
     val name: String = "",
     val email: String = ""

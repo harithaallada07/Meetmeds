@@ -1,0 +1,42 @@
+package uk.ac.tees.mad.meetmeds.di
+
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import uk.ac.tees.mad.meetmeds.data.repository.AuthRepositoryImpl
+import uk.ac.tees.mad.meetmeds.data.repository.UserRepositoryImpl
+import uk.ac.tees.mad.meetmeds.domain.repository.AuthRepository
+import uk.ac.tees.mad.meetmeds.domain.repository.UserRepository
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    //Provides a singleton instance of FirebaseAuth
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    // Provides a singleton instance of FirebaseFirestore
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    //Provides a singleton instance of our AuthRepository
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        auth: FirebaseAuth
+    ): AuthRepository = AuthRepositoryImpl(auth)
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore
+    ): UserRepository = UserRepositoryImpl(firestore, auth)
+}
