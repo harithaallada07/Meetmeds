@@ -7,12 +7,14 @@ import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.meetmeds.presentation.auth.AuthScreen
 
 @Composable
-fun NavGraph() {
+fun NavGraph(
+    startDestination: String
+) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Auth.route
+        startDestination = startDestination
     ) {
         // Auth Screen
         composable(Screen.Auth.route) {
