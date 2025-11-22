@@ -1,18 +1,15 @@
 package uk.ac.tees.mad.meetmeds.presentation.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import uk.ac.tees.mad.meetmeds.presentation.medicine.medicinelist.MedicineListScreen
+import uk.ac.tees.mad.meetmeds.presentation.medicine.medicinelist.MedicineListViewModel
 
 @Composable
 fun MainScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: MedicineListViewModel = hiltViewModel()
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Hello Main")
-    }
+    MedicineListScreen(navController)
 }

@@ -7,8 +7,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import uk.ac.tees.mad.meetmeds.data.repository.AuthRepositoryImpl
+import uk.ac.tees.mad.meetmeds.data.repository.MedicineRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.UserRepositoryImpl
 import uk.ac.tees.mad.meetmeds.domain.repository.AuthRepository
+import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.UserRepository
 import javax.inject.Singleton
 
@@ -39,4 +41,8 @@ object AppModule {
         auth: FirebaseAuth,
         firestore: FirebaseFirestore
     ): UserRepository = UserRepositoryImpl(firestore, auth)
+
+    @Provides
+    @Singleton
+    fun provideMedicineRepository(): MedicineRepository = MedicineRepositoryImpl()
 }
