@@ -1,28 +1,47 @@
 package uk.ac.tees.mad.meetmeds.data.repository
 
-import kotlinx.coroutines.delay
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import uk.ac.tees.mad.meetmeds.data.local.MedicineDao
+import uk.ac.tees.mad.meetmeds.data.local.toDomain
+import uk.ac.tees.mad.meetmeds.data.local.toEntity
 import uk.ac.tees.mad.meetmeds.domain.model.Medicine
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
 import javax.inject.Inject
 
-class MedicineRepositoryImpl @Inject constructor() : MedicineRepository {
+class MedicineRepositoryImpl @Inject constructor(
+    private val firestore: FirebaseFirestore,
+    private val dao: MedicineDao
+) : MedicineRepository {
 
-    // Simulating a network/database call with dummy data
-    override fun getMedicines(): Flow<Resource<List<Medicine>>> = flow {
-        emit(Resource.Loading())
-        delay(1000) // Simulate network delay
+    override fun getMedicines(): Flow<Resource<List<Medicine>>> = channelFlow {
+        // 1. Emit Loading
+        send(Resource.Loading())
 
-        val dummyList = listOf(
-            Medicine("1", "Paracetamol", "500mg", 2.50, "Pain reliever and fever reducer.", inStock = true),
-            Medicine("2", "Amoxicillin", "250mg", 8.99, "Antibiotic used to treat bacterial infections.", inStock = true),
-            Medicine("3", "Ibuprofen", "400mg", 3.20, "Nonsteroidal anti-inflammatory drug (NSAID).", inStock = true),
-            Medicine("4", "Cetirizine", "10mg", 4.50, "Antihistamine used to treat hay fever and allergies.", inStock = false),
-            Medicine("5", "Metformin", "500mg", 5.00, "First-line medication for the treatment of type 2 diabetes.", inStock = true)
-        )
+        // 2. Launch a coroutine to observe Local Database (Single Source of Truth)
+        val localJob = launch {
+            dao.getMedicines().collect { entities ->
+                send(Resource.Success(entities.map { it.toDomain() }))
+            }
+        }
 
-        emit(Resource.Success(dummyList))
+        // 3. Fetch from Firestore to update Local Database
+        try {
+            val snapshot = firestore.collection("medicines").get().await()
+            val medicines = snapshot.toObjects(Medicine::class.java)
+
+            // Clear old cache and insert new data
+            // (In a real app, you might want more complex diffing, but this ensures freshness)
+            dao.clearMedicines()
+            dao.insertMedicines(medicines.map { it.toEntity() })
+
+        } catch (e: Exception) {
+            // If network fails, we just emit Error but the local flow continues to show cached data
+            send(Resource.Error(e.localizedMessage ?: "Failed to sync data", null))
+        }
     }
 }

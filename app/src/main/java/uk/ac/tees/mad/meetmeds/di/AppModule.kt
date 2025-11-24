@@ -1,11 +1,14 @@
 package uk.ac.tees.mad.meetmeds.di
 
+import android.app.Application
+import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import uk.ac.tees.mad.meetmeds.data.local.MeetMedsDatabase
 import uk.ac.tees.mad.meetmeds.data.repository.AuthRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.MedicineRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.UserRepositoryImpl
@@ -37,6 +40,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDatabase(app: Application): MeetMedsDatabase {
+        return Room.databaseBuilder(
+            app,
+            MeetMedsDatabase::class.java,
+            "meetmeds_db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
     fun provideUserRepository(
         auth: FirebaseAuth,
         firestore: FirebaseFirestore
@@ -44,5 +57,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMedicineRepository(): MedicineRepository = MedicineRepositoryImpl()
+    fun provideMedicineRepository(
+        firestore: FirebaseFirestore,
+        db: MeetMedsDatabase
+    ): MedicineRepository = MedicineRepositoryImpl(firestore, db.medicineDao())
 }
