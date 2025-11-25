@@ -20,7 +20,7 @@ class MedicineListViewModel @Inject constructor(
     private val _state = mutableStateOf(MedicineListState())
     val state: State<MedicineListState> = _state
 
-    // Separate list to hold the full data for filtering
+    // Hold full data for memory filtering
     private var allMedicines = listOf<Medicine>()
 
     private val _searchQuery = mutableStateOf("")
@@ -35,13 +35,29 @@ class MedicineListViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     allMedicines = result.data ?: emptyList()
-                    _state.value = MedicineListState(medicines = allMedicines)
+                    // Re-apply search query if exists
+                    if (_searchQuery.value.isEmpty()) {
+                        _state.value = MedicineListState(medicines = allMedicines)
+                    } else {
+                        onSearch(_searchQuery.value)
+                    }
                 }
                 is Resource.Error -> {
-                    _state.value = MedicineListState(error = result.message ?: "An unexpected error occurred")
+                    // If we have data from cache (allMedicines not empty), keep showing it but set error
+                    if (allMedicines.isNotEmpty()) {
+                        _state.value = _state.value.copy(
+                            error = result.message ?: "Sync failed",
+                            isLoading = false
+                        )
+                    } else {
+                        _state.value = MedicineListState(error = result.message ?: "An unexpected error occurred")
+                    }
                 }
                 is Resource.Loading -> {
-                    _state.value = MedicineListState(isLoading = true)
+                    // Only show loading if we have no data yet
+                    if (allMedicines.isEmpty()) {
+                        _state.value = MedicineListState(isLoading = true)
+                    }
                 }
             }
         }.launchIn(viewModelScope)
@@ -53,15 +69,10 @@ class MedicineListViewModel @Inject constructor(
             _state.value = _state.value.copy(medicines = allMedicines)
         } else {
             val filtered = allMedicines.filter {
-                it.name.contains(query, ignoreCase = true)
+                it.name.contains(query, ignoreCase = true) ||
+                        it.description.contains(query, ignoreCase = true)
             }
             _state.value = _state.value.copy(medicines = filtered)
         }
     }
 }
-
-data class MedicineListState(
-    val isLoading: Boolean = false,
-    val medicines: List<Medicine> = emptyList(),
-    val error: String = ""
-)
