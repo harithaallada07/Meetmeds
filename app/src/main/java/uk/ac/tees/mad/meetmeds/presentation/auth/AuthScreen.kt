@@ -3,27 +3,49 @@ package uk.ac.tees.mad.meetmeds.presentation.auth
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.ac.tees.mad.meetmeds.domain.model.AuthResult
 import uk.ac.tees.mad.meetmeds.presentation.navigation.Screen
+import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
 @Composable
 fun AuthScreen(
@@ -33,21 +55,6 @@ fun AuthScreen(
     val context = LocalContext.current
     val authState = viewModel.authState.value
     val resetPasswordState = viewModel.resetPasswordState.value
-
-    // UI State for toggle
-    var isLoginMode by remember { mutableStateOf(true) }
-
-    // Input States
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-
-    // VISIBILITY STATES
-    var isPasswordVisible by remember { mutableStateOf(false) }
-    var isConfirmPasswordVisible by remember { mutableStateOf(false) }
-
-    // Dialog Visibility State
-    var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
     // Handle Login/Register Results
     LaunchedEffect(authState) {
@@ -69,7 +76,6 @@ fun AuthScreen(
         when (resetPasswordState) {
             is AuthResult.Success -> {
                 Toast.makeText(context, "Reset link sent to email", Toast.LENGTH_LONG).show()
-                showForgotPasswordDialog = false
                 viewModel.clearResetPasswordState()
             }
             is AuthResult.Error -> {
@@ -79,6 +85,39 @@ fun AuthScreen(
             else -> {}
         }
     }
+
+    // Pass events and state to the stateless content
+    AuthContent(
+        authState = authState,
+        onLogin = { email, pass -> viewModel.loginUser(email, pass) },
+        onRegister = { email, pass -> viewModel.registerUser(email, pass) },
+        onResetPassword = { email -> viewModel.resetPassword(email) }
+    )
+}
+
+@Composable
+fun AuthContent(
+    authState: AuthResult?,
+    onLogin: (String, String) -> Unit,
+    onRegister: (String, String) -> Unit,
+    onResetPassword: (String) -> Unit
+) {
+    val context = LocalContext.current
+
+    // UI State for toggle
+    var isLoginMode by remember { mutableStateOf(true) }
+
+    // Input States
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
+    // VISIBILITY STATES
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+
+    // Dialog Visibility State
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
     // Forgot Password Dialog
     if (showForgotPasswordDialog) {
@@ -102,7 +141,8 @@ fun AuthScreen(
                 Button(
                     onClick = {
                         if (resetEmail.isNotEmpty()) {
-                            viewModel.resetPassword(resetEmail)
+                            onResetPassword(resetEmail)
+                            showForgotPasswordDialog = false
                         } else {
                             Toast.makeText(context, "Please enter email", Toast.LENGTH_SHORT).show()
                         }
@@ -124,7 +164,7 @@ fun AuthScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background), // Uses Theme Background
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -156,9 +196,7 @@ fun AuthScreen(
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            // Toggle Visual Transformation
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            // Toggle Icon
             trailingIcon = {
                 val image = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
@@ -177,9 +215,7 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = confirmPassword.isNotEmpty() && confirmPassword != password,
-                // Toggle Visual Transformation
                 visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                // Toggle Icon
                 trailingIcon = {
                     val image = if (isConfirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
@@ -216,10 +252,10 @@ fun AuthScreen(
             onClick = {
                 if (email.isNotEmpty() && password.isNotEmpty()) {
                     if (isLoginMode) {
-                        viewModel.loginUser(email, password)
+                        onLogin(email, password)
                     } else {
                         if (password == confirmPassword) {
-                            viewModel.registerUser(email, password)
+                            onRegister(email, password)
                         } else {
                             Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
                         }
@@ -234,7 +270,7 @@ fun AuthScreen(
             if (authState is AuthResult.Loading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary, // Contrast against button primary color
                     strokeWidth = 2.dp
                 )
             } else {
@@ -251,7 +287,7 @@ fun AuthScreen(
         ) {
             Text(
                 text = if (isLoginMode) "Don't have an account? " else "Already have an account? ",
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = if (isLoginMode) "Sign Up" else "Log In",
@@ -259,15 +295,39 @@ fun AuthScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.clickable {
                     isLoginMode = !isLoginMode
-                    // Clear fields when switching
                     email = ""
                     password = ""
                     confirmPassword = ""
-                    // Reset visibility on switch
                     isPasswordVisible = false
                     isConfirmPasswordVisible = false
                 }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AuthScreenPreview() {
+    MeetMedsTheme {
+        AuthContent(
+            authState = null,
+            onLogin = { _, _ -> },
+            onRegister = { _, _ -> },
+            onResetPassword = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AuthScreenLoadingPreview() {
+    MeetMedsTheme {
+        AuthContent(
+            authState = AuthResult.Loading,
+            onLogin = { _, _ -> },
+            onRegister = { _, _ -> },
+            onResetPassword = {}
+        )
     }
 }

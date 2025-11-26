@@ -19,14 +19,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen().apply {
-            setOnExitAnimationListener { screen->
-                screen.iconView.animate()
-                    .alpha(0f)
-                    .setDuration(3000)
-                    .withEndAction {
-                        screen.remove()
-                    }.start()
-            }
+//            setOnExitAnimationListener { screen->
+//                screen.iconView.animate()
+//                    .alpha(0f)
+//                    .setDuration(1500)
+//                    .withEndAction {
+//                        screen.remove()
+//                    }.start()
+//            }
             setKeepOnScreenCondition {
                 viewModel.isLoading.value
             }

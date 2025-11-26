@@ -128,4 +128,6 @@ dependencies {
 
     // material icons
     implementation(libs.androidx.compose.material.icons.extended)
+
+    implementation(libs.material)
 }
