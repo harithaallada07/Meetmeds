@@ -10,9 +10,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import uk.ac.tees.mad.meetmeds.data.local.MeetMedsDatabase
 import uk.ac.tees.mad.meetmeds.data.repository.AuthRepositoryImpl
+import uk.ac.tees.mad.meetmeds.data.repository.CartRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.MedicineRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.UserRepositoryImpl
 import uk.ac.tees.mad.meetmeds.domain.repository.AuthRepository
+import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.UserRepository
 import javax.inject.Singleton
@@ -61,4 +63,10 @@ object AppModule {
         firestore: FirebaseFirestore,
         db: MeetMedsDatabase
     ): MedicineRepository = MedicineRepositoryImpl(firestore, db.medicineDao())
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(
+        db: MeetMedsDatabase
+    ): CartRepository = CartRepositoryImpl(db.cartDao())
 }
