@@ -47,7 +47,9 @@ object AppModule {
             app,
             MeetMedsDatabase::class.java,
             "meetmeds_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides

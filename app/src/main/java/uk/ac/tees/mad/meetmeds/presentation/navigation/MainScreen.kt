@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import uk.ac.tees.mad.meetmeds.presentation.cart.CartScreen
 import uk.ac.tees.mad.meetmeds.presentation.medicine.medicinelist.MedicineListScreen
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
@@ -26,10 +27,16 @@ fun MainScreen(
         selectedItem = selectedItem,
         onItemSelected = { selectedItem = it },
         content = {
-            // This handles the real screen switching logic
             when (selectedItem) {
                 0 -> MedicineListScreen(navController = navController)
-                1 -> CartPlaceholder() // Placeholder for Sprint 2
+                1 -> CartScreen(
+                    navController = navController,
+                    onCheckoutClick = {
+                        // We will define this route
+                        // navController.navigate(Screen.Checkout.route)
+                    }
+                )
+
                 2 -> OrdersPlaceholder()
             }
         }
@@ -72,7 +79,11 @@ fun MainScreenContent(
         }
     ) { paddingValues ->
         // The content box where screens are swapped
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
             content()
         }
     }
@@ -118,7 +129,7 @@ fun MainScreenPreview() {
                 // Mock Content for Preview to visualize switching tabs without crashing
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = when(selectedItem) {
+                        text = when (selectedItem) {
                             0 -> "Medicine List Content Area"
                             1 -> "Cart Content Area"
                             else -> "Profile Content Area"

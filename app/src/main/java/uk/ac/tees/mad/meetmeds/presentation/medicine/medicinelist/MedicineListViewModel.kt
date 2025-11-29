@@ -7,14 +7,17 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import uk.ac.tees.mad.meetmeds.domain.model.Medicine
+import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
 class MedicineListViewModel @Inject constructor(
-    private val repository: MedicineRepository
+    private val repository: MedicineRepository,
+    private val cartRepository: CartRepository
 ) : ViewModel() {
 
     private val _state = mutableStateOf(MedicineListState())
@@ -73,6 +76,12 @@ class MedicineListViewModel @Inject constructor(
                         it.description.contains(query, ignoreCase = true)
             }
             _state.value = _state.value.copy(medicines = filtered)
+        }
+    }
+
+    fun addToCart(medicine: Medicine, quantity: Int) {
+        viewModelScope.launch {
+            cartRepository.addToCart(medicine, quantity)
         }
     }
 }

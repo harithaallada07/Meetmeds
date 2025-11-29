@@ -75,7 +75,7 @@ fun MedicineListScreen(
         searchQuery = searchQuery,
         onSearch = { viewModel.onSearch(it) },
         onAddToCart = { medicine, quantity ->
-            // TODO: Handle ViewModel AddToCart here
+            viewModel.addToCart(medicine, quantity)
         }
     )
 }
