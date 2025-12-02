@@ -12,10 +12,12 @@ import uk.ac.tees.mad.meetmeds.data.local.MeetMedsDatabase
 import uk.ac.tees.mad.meetmeds.data.repository.AuthRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.CartRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.MedicineRepositoryImpl
+import uk.ac.tees.mad.meetmeds.data.repository.OrderRepositoryImpl
 import uk.ac.tees.mad.meetmeds.data.repository.UserRepositoryImpl
 import uk.ac.tees.mad.meetmeds.domain.repository.AuthRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
+import uk.ac.tees.mad.meetmeds.domain.repository.OrderRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.UserRepository
 import javax.inject.Singleton
 
@@ -71,4 +73,10 @@ object AppModule {
     fun provideCartRepository(
         db: MeetMedsDatabase
     ): CartRepository = CartRepositoryImpl(db.cartDao())
+
+    @Provides
+    @Singleton
+    fun provideOrderRepository(
+        firestore: FirebaseFirestore
+    ): OrderRepository = OrderRepositoryImpl(firestore)
 }
