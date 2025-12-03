@@ -31,12 +31,11 @@ fun MainScreen(
                 0 -> MedicineListScreen(navController = navController)
                 1 -> CartScreen(
                     navController = navController,
-                    onCheckoutClick = {
-                        // We will define this route
-                        // navController.navigate(Screen.Checkout.route)
+                    onCheckoutClick = { uriString ->
+                        // FIX: Use createRoute to pass the specific URI
+                        navController.navigate(Screen.Checkout.createRoute(uriString))
                     }
                 )
-
                 2 -> OrdersPlaceholder()
             }
         }
@@ -56,7 +55,6 @@ fun MainScreenContent(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                // Use Theme colors instead of hardcoded Color.White
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ) {
@@ -78,7 +76,6 @@ fun MainScreenContent(
             }
         }
     ) { paddingValues ->
-        // The content box where screens are swapped
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -90,17 +87,6 @@ fun MainScreenContent(
 }
 
 // --- PLACEHOLDERS ---
-
-@Composable
-fun CartPlaceholder() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = "Cart Screen - Coming Soon",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
 
 @Composable
 fun OrdersPlaceholder() {
@@ -119,23 +105,15 @@ fun OrdersPlaceholder() {
 @Composable
 fun MainScreenPreview() {
     MeetMedsTheme {
-        // Internal state for the preview interaction
         var selectedItem by remember { mutableIntStateOf(0) }
-
         MainScreenContent(
             selectedItem = selectedItem,
             onItemSelected = { selectedItem = it },
             content = {
-                // Mock Content for Preview to visualize switching tabs without crashing
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = when (selectedItem) {
-                            0 -> "Medicine List Content Area"
-                            1 -> "Cart Content Area"
-                            else -> "Profile Content Area"
-                        },
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onBackground
+                        text = "Content Area",
+                        style = MaterialTheme.typography.headlineMedium
                     )
                 }
             }

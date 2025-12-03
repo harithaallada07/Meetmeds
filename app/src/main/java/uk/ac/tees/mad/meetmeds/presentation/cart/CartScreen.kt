@@ -35,13 +35,12 @@ import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 fun CartScreen(
     navController: NavController,
     viewModel: CartViewModel = hiltViewModel(),
-    onCheckoutClick: () -> Unit
+    onCheckoutClick: (String?) -> Unit // CORRECT SIGNATURE: Accepts a String? (URI)
 ) {
     val cartItems = viewModel.cartItems.value
     val total = viewModel.totalPrice.value
     val prescriptionUri = viewModel.prescriptionUri.value
 
-    // Logic for image picker resides here in the stateful parent
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -57,7 +56,10 @@ fun CartScreen(
         onDelete = { item -> viewModel.removeItem(item) },
         onUploadClick = { launcher.launch("image/*") },
         onRemovePrescriptionClick = { viewModel.setPrescriptionUri(null) },
-        onCheckoutClick = onCheckoutClick
+        // FIX: Correctly pass the URI string when the button is clicked
+        onCheckoutClick = {
+            onCheckoutClick(viewModel.prescriptionUri.value?.toString())
+        }
     )
 }
 
@@ -72,7 +74,7 @@ fun CartContent(
     onDelete: (CartItem) -> Unit,
     onUploadClick: () -> Unit,
     onRemovePrescriptionClick: () -> Unit,
-    onCheckoutClick: () -> Unit
+    onCheckoutClick: () -> Unit // This stays as () -> Unit because the logic is handled above
 ) {
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (cartItems.isEmpty()) {
@@ -266,62 +268,5 @@ fun CartItemRow(
                 }
             }
         }
-    }
-}
-
-// --- PREVIEWS ---
-
-// We create dummy data for the preview
-private val dummyCartItems = listOf(
-    CartItem(medicineId = "1", name = "Paracetamol", price = 2.50, quantity = 2, imageUrl = ""),
-    CartItem(medicineId = "2", name = "Vitamin C", price = 5.00, quantity = 1, imageUrl = "")
-)
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CartScreenContentPreview() {
-    MeetMedsTheme {
-        CartContent(
-            cartItems = dummyCartItems,
-            totalPrice = 10.00,
-            prescriptionUri = null,
-            onIncrease = {},
-            onDecrease = {},
-            onDelete = {},
-            onUploadClick = {},
-            onRemovePrescriptionClick = {},
-            onCheckoutClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CartScreenEmptyPreview() {
-    MeetMedsTheme {
-        CartContent(
-            cartItems = emptyList(),
-            totalPrice = 0.00,
-            prescriptionUri = null,
-            onIncrease = {},
-            onDecrease = {},
-            onDelete = {},
-            onUploadClick = {},
-            onRemovePrescriptionClick = {},
-            onCheckoutClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CartItemRowPreview() {
-    MeetMedsTheme {
-        CartItemRow(
-            item = dummyCartItems[0],
-            onIncrease = {},
-            onDecrease = {},
-            onDelete = {}
-        )
     }
 }
