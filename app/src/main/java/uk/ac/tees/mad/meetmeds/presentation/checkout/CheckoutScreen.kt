@@ -37,9 +37,11 @@ fun CheckoutScreen(
                     popUpTo(Screen.Main.route) { inclusive = true }
                 }
             }
+
             is Resource.Error -> {
                 Toast.makeText(context, orderState.message, Toast.LENGTH_SHORT).show()
             }
+
             else -> {}
         }
     }
@@ -79,7 +81,7 @@ fun CheckoutContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp, bottom = 32.dp, end = 16.dp, top = 48.dp)
+            .padding(16.dp, bottom = 32.dp, end = 16.dp, top = 64.dp)
     ) {
         Text(
             text = "Checkout",
@@ -88,7 +90,7 @@ fun CheckoutContent(
             color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Address Form
         Card(
@@ -125,7 +127,11 @@ fun CheckoutContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Order Summary
-        Text("Order Summary", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(
+            "Order Summary",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(cartItems.size) { index ->
                 val item = cartItems[index]
@@ -135,8 +141,14 @@ fun CheckoutContent(
                         .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("${item.quantity}x ${item.name}", color = MaterialTheme.colorScheme.onBackground)
-                    Text("£${String.format("%.2f", item.price * item.quantity)}", color = MaterialTheme.colorScheme.onBackground)
+                    Text(
+                        "${item.quantity}x ${item.name}",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        "£${String.format("%.2f", item.price * item.quantity)}",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
@@ -148,12 +160,16 @@ fun CheckoutContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(
+                "Total", style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Text(
                 "£${String.format("%.2f", total)}",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -167,7 +183,9 @@ fun CheckoutContent(
                     Toast.makeText(context, "Please enter address", Toast.LENGTH_SHORT).show()
                 }
             },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             enabled = !isLoading
         ) {
             if (isLoading) {

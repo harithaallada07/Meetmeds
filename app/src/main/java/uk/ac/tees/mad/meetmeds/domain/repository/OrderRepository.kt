@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface OrderRepository {
     suspend fun placeOrder(order: Order): Flow<Resource<Boolean>>
+
+    fun getOrders(): Flow<Resource<List<Order>>>
 }

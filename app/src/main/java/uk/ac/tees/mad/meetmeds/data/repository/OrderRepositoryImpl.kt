@@ -30,4 +30,26 @@ class OrderRepositoryImpl @Inject constructor(
             emit(Resource.Error(e.localizedMessage ?: "Failed to place order"))
         }
     }
+
+    override fun getOrders(): Flow<Resource<List<Order>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val userId = auth.currentUser?.uid ?: throw Exception("User not logged in")
+
+            // Query Firestore where "userId" matches current user
+            val snapshot = firestore.collection("orders")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+
+            // Map documents to Order objects
+            val orders = snapshot.toObjects(Order::class.java)
+
+            // Sort by timestamp descending (newest first)
+            val sortedOrders = orders.sortedByDescending { it.timestamp }
+
+            emit(Resource.Success(sortedOrders))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Failed to fetch orders"))
+        }
 }
