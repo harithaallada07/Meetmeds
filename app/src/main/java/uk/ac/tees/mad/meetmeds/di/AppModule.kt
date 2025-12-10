@@ -77,6 +77,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOrderRepository(
-        firestore: FirebaseFirestore
-    ): OrderRepository = OrderRepositoryImpl(firestore)
+        firestore: FirebaseFirestore,
+        auth: FirebaseAuth
+    ): OrderRepository = OrderRepositoryImpl(firestore, auth)
 }

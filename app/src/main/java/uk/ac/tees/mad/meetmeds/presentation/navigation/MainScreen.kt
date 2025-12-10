@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import uk.ac.tees.mad.meetmeds.presentation.orders.OrderHistoryScreen
 import uk.ac.tees.mad.meetmeds.presentation.cart.CartScreen
 import uk.ac.tees.mad.meetmeds.presentation.medicine.medicinelist.MedicineListScreen
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
@@ -36,7 +37,7 @@ fun MainScreen(
                         navController.navigate(Screen.Checkout.createRoute(uriString))
                     }
                 )
-                2 -> OrdersPlaceholder()
+                2 -> OrderHistoryScreen(navController = navController)
             }
         }
     )

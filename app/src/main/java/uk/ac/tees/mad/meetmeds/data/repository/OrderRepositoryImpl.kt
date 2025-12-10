@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.meetmeds.data.repository
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,7 +11,8 @@ import uk.ac.tees.mad.meetmeds.util.Resource
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
 ) : OrderRepository {
 
     override suspend fun placeOrder(order: Order): Flow<Resource<Boolean>> = flow {
@@ -52,4 +54,5 @@ class OrderRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Failed to fetch orders"))
         }
+    }
 }
