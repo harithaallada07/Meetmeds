@@ -80,8 +80,9 @@ fun CheckoutContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp, bottom = 32.dp, end = 16.dp, top = 64.dp)
+            .padding(16.dp, end = 16.dp,)
     ) {
         Text(
             text = "Checkout",

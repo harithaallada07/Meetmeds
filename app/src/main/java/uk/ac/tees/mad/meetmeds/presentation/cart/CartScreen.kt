@@ -89,8 +89,8 @@ fun CartContent(
 
                 // Scrollable Item List + Prescription Section
                 LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(16.dp)
+                    modifier = Modifier.weight(1f).systemBarsPadding(),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     items(cartItems) { item ->
                         CartItemRow(

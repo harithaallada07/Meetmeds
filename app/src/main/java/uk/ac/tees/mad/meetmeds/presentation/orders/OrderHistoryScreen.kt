@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import uk.ac.tees.mad.meetmeds.domain.model.Address
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.domain.model.Order
+import uk.ac.tees.mad.meetmeds.presentation.navigation.Screen
 import uk.ac.tees.mad.meetmeds.util.Resource
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -42,46 +43,96 @@ fun OrderHistoryScreen(
     viewModel: OrderHistoryViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    OrderHistoryContent(state = state)
+    val logoutState = viewModel.logoutState.value
+
+    // Handle Logout Navigation side effect
+    LaunchedEffect(key1 = logoutState) {
+        if (logoutState is Resource.Success) {
+            // Navigate to Auth Screen and clear the backstack
+            navController.navigate(Screen.Auth.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
+    // Show a loading indicator if logout is in progress (Optional UI enhancement)
+    if (logoutState is Resource.Loading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        OrderHistoryContent(
+            state = state,
+            onLogoutClick = { viewModel.logout() }
+        )
+    }
 }
 
 // 2. Stateless Composable (Pure UI)
 @Composable
 fun OrderHistoryContent(
-    state: Resource<List<Order>>
+    state: Resource<List<Order>>,
+    onLogoutClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        when (state) {
-            is Resource.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            is Resource.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = state.message ?: "Error loading orders",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-            is Resource.Success -> {
-                val orders = state.data ?: emptyList()
-                if (orders.isEmpty()) {
+        // We wrap the list in a weight so it takes up available space, pushing the button to the bottom
+        Column(modifier = Modifier.weight(1f)) {
+            when (state) {
+                is Resource.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No past orders found.")
+                        CircularProgressIndicator()
                     }
-                } else {
-                    LazyColumn {
-                        items(orders) { order ->
-                            OrderItem(order = order)
+                }
+                is Resource.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = state.message ?: "Error loading orders",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                is Resource.Success -> {
+                    val orders = state.data ?: emptyList()
+                    if (orders.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No past orders found.")
+                        }
+                    } else {
+                        LazyColumn {
+                            items(orders) { order ->
+                                OrderItem(order = order)
+                            }
                         }
                     }
+                }
+            }
+        }
+
+        // Bottom Surface for Logout Button
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 16.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                Button(
+                    onClick = onLogoutClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error, // Red color for logout
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Logout", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -258,6 +309,9 @@ fun OrderHistoryPreview() {
     )
 
     MaterialTheme {
-        OrderHistoryContent(state = Resource.Success(mockOrders))
+        OrderHistoryContent(
+            state = Resource.Success(mockOrders),
+            onLogoutClick = {}
+        )
     }
 }
