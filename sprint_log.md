@@ -38,3 +38,24 @@ Outcome:
 - Auth screen launches and handles login/register without Hilt
 - Cart ViewModel is manually initialized with its repository
 
+
+Sprint 3 - 16/March/2026
+
+User Story:
+As a user, I want to browse medicines and add them
+to my cart so that I can prepare my order.
+
+Work Done:
+- Commit 5: refactor(medicine): remove @HiltViewModel from MedicineListViewModel
+  - Removed @HiltViewModel and @Inject annotations
+  - Added MedicineListViewModel.Factory accepting MedicineRepository and CartRepository
+
+- Commit 6: refactor(checkout): remove @HiltViewModel from CheckoutViewModel
+  - Removed @HiltViewModel and @Inject annotations
+  - Added CheckoutViewModel.Factory accepting CartRepository, OrderRepository and FirebaseAuth
+
+Outcome:
+- Medicine list screen loads and search works correctly
+- Checkout screen initializes without Hilt injection
+
+
