@@ -9,9 +9,8 @@ import uk.ac.tees.mad.meetmeds.domain.model.UserProfile
 import uk.ac.tees.mad.meetmeds.domain.repository.UserRepository
 import uk.ac.tees.mad.meetmeds.util.Constants
 import uk.ac.tees.mad.meetmeds.util.Resource
-import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(
+class UserRepositoryImpl(
     private val firestore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth
 ) : UserRepository {

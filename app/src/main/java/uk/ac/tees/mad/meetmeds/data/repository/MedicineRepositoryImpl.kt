@@ -11,9 +11,8 @@ import uk.ac.tees.mad.meetmeds.data.local.toEntity
 import uk.ac.tees.mad.meetmeds.domain.model.Medicine
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
-import javax.inject.Inject
 
-class MedicineRepositoryImpl @Inject constructor(
+class MedicineRepositoryImpl (
     private val firestore: FirebaseFirestore,
     private val dao: MedicineDao
 ) : MedicineRepository {

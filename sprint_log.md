@@ -59,3 +59,27 @@ Outcome:
 - Checkout screen initializes without Hilt injection
 
 
+Sprint 4 - 20/March/2026
+
+User Story:
+As a user, I want to place orders and view my order
+history so that I can track my medicine purchases.
+
+Work Done:
+- Commit 7: refactor(orders): remove @HiltViewModel from OrderHistoryViewModel
+  - Removed @HiltViewModel and @Inject annotations
+  - Added OrderHistoryViewModel.Factory accepting OrderRepository and AuthRepository
+
+- Commit 8: refactor(data): remove @Inject constructors from all RepositoryImpl classes
+  - Removed @Inject and javax.inject.Inject from AuthRepositoryImpl
+  - Removed @Inject and javax.inject.Inject from UserRepositoryImpl
+  - Removed @Inject and javax.inject.Inject from MedicineRepositoryImpl
+  - Removed @Inject and javax.inject.Inject from CartRepositoryImpl
+  - Removed @Inject and javax.inject.Inject from OrderRepositoryImpl
+
+Outcome:
+- Order history screen loads correctly with manual DI
+- All repository implementations are plain constructor classes with no Hilt annotations
+
+
+
