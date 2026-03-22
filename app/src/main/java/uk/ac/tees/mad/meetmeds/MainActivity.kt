@@ -6,27 +6,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import dagger.hilt.android.AndroidEntryPoint
 import uk.ac.tees.mad.meetmeds.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.meetmeds.presentation.navigation.NavGraph
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    // Inject the ViewModel to access the splash loading state
-    private val viewModel: AuthViewModel by viewModels()
+
+    private val viewModel: AuthViewModel by viewModels {
+        val container = (application as MeetMedsApplication).container
+        AuthViewModel.Factory(container.authRepository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen().apply {
-//            setOnExitAnimationListener { screen->
-//                screen.iconView.animate()
-//                    .alpha(0f)
-//                    .setDuration(1500)
-//                    .withEndAction {
-//                        screen.remove()
-//                    }.start()
-//            }
             setKeepOnScreenCondition {
                 viewModel.isLoading.value
             }
