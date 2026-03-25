@@ -6,10 +6,11 @@ import uk.ac.tees.mad.meetmeds.data.local.toEntity
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.domain.model.Medicine
 import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class CartRepositoryImpl (
+class CartRepositoryImpl @Inject constructor(
     private val cartDao: CartDao
 ) : CartRepository {
 

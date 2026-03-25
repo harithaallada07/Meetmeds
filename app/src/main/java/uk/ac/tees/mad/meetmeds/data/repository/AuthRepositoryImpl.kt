@@ -7,8 +7,9 @@ import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.meetmeds.domain.model.AuthResult
 import uk.ac.tees.mad.meetmeds.domain.repository.AuthRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
+import javax.inject.Inject
 
-class AuthRepositoryImpl (
+class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : AuthRepository {
 

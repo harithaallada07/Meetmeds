@@ -5,15 +5,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
+import javax.inject.Inject
 
-class CartViewModel(
+@HiltViewModel
+class CartViewModel @Inject constructor(
     private val cartRepository: CartRepository
 ) : ViewModel() {
 
@@ -23,6 +25,7 @@ class CartViewModel(
     private val _totalPrice = mutableDoubleStateOf(0.0)
     val totalPrice: State<Double> = _totalPrice
 
+    // State to hold the selected prescription image
     private val _prescriptionUri = mutableStateOf<Uri?>(null)
     val prescriptionUri: State<Uri?> = _prescriptionUri
 
@@ -55,12 +58,5 @@ class CartViewModel(
 
     fun setPrescriptionUri(uri: Uri?) {
         _prescriptionUri.value = uri
-    }
-
-    class Factory(private val cartRepository: CartRepository) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return CartViewModel(cartRepository) as T
-        }
     }
 }

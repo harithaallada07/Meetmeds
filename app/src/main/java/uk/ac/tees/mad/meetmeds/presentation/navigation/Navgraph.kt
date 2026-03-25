@@ -1,6 +1,8 @@
 package uk.ac.tees.mad.meetmeds.presentation.navigation
 
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,7 +18,8 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        modifier = Modifier.safeDrawingPadding()
     ) {
         // Auth Screen
         composable(Screen.Auth.route) {

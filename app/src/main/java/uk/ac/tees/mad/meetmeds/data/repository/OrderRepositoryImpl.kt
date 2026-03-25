@@ -8,8 +8,9 @@ import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.meetmeds.domain.model.Order
 import uk.ac.tees.mad.meetmeds.domain.repository.OrderRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
+import javax.inject.Inject
 
-class OrderRepositoryImpl (
+class OrderRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ) : OrderRepository {

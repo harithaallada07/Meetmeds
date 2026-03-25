@@ -3,9 +3,9 @@ package uk.ac.tees.mad.meetmeds.presentation.checkout
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -15,13 +15,16 @@ import uk.ac.tees.mad.meetmeds.domain.model.Order
 import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.OrderRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
+import javax.inject.Inject
 
-class CheckoutViewModel(
+@HiltViewModel
+class CheckoutViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     private val orderRepository: OrderRepository,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
+    // UI States
     var street = mutableStateOf("")
     var city = mutableStateOf("")
     var postcode = mutableStateOf("")
@@ -32,6 +35,7 @@ class CheckoutViewModel(
     private val _cartItems = mutableStateOf<List<CartItem>>(emptyList())
     val cartItems: State<List<CartItem>> = _cartItems
 
+    // Total calculation
     val total: Double
         get() = _cartItems.value.sumOf { it.price * it.quantity }
 
@@ -47,7 +51,9 @@ class CheckoutViewModel(
 
     fun placeOrder(prescriptionUri: String?) {
         val userId = firebaseAuth.currentUser?.uid ?: return
+
         val address = Address(street.value, city.value, postcode.value)
+
         val order = Order(
             userId = userId,
             items = _cartItems.value,
@@ -55,24 +61,15 @@ class CheckoutViewModel(
             totalPrice = total,
             prescriptionUri = prescriptionUri
         )
+
         viewModelScope.launch {
             orderRepository.placeOrder(order).collect { result ->
                 _orderState.value = result
                 if (result is Resource.Success) {
+                    // Clear local cart after successful server order
                     cartRepository.clearCart()
                 }
             }
-        }
-    }
-
-    class Factory(
-        private val cartRepository: CartRepository,
-        private val orderRepository: OrderRepository,
-        private val firebaseAuth: FirebaseAuth
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return CheckoutViewModel(cartRepository, orderRepository, firebaseAuth) as T
         }
     }
 }

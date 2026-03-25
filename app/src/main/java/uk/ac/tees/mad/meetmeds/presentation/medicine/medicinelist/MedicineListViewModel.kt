@@ -3,8 +3,8 @@ package uk.ac.tees.mad.meetmeds.presentation.medicine.medicinelist
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -12,8 +12,10 @@ import uk.ac.tees.mad.meetmeds.domain.model.Medicine
 import uk.ac.tees.mad.meetmeds.domain.repository.CartRepository
 import uk.ac.tees.mad.meetmeds.domain.repository.MedicineRepository
 import uk.ac.tees.mad.meetmeds.util.Resource
+import javax.inject.Inject
 
-class MedicineListViewModel(
+@HiltViewModel
+class MedicineListViewModel @Inject constructor(
     private val repository: MedicineRepository,
     private val cartRepository: CartRepository
 ) : ViewModel() {
@@ -21,6 +23,7 @@ class MedicineListViewModel(
     private val _state = mutableStateOf(MedicineListState())
     val state: State<MedicineListState> = _state
 
+    // Hold full data for memory filtering
     private var allMedicines = listOf<Medicine>()
 
     private val _searchQuery = mutableStateOf("")
@@ -35,6 +38,7 @@ class MedicineListViewModel(
             when (result) {
                 is Resource.Success -> {
                     allMedicines = result.data ?: emptyList()
+                    // Re-apply search query if exists
                     if (_searchQuery.value.isEmpty()) {
                         _state.value = MedicineListState(medicines = allMedicines)
                     } else {
@@ -42,6 +46,7 @@ class MedicineListViewModel(
                     }
                 }
                 is Resource.Error -> {
+                    // If we have data from cache (allMedicines not empty), keep showing it but set error
                     if (allMedicines.isNotEmpty()) {
                         _state.value = _state.value.copy(
                             error = result.message ?: "Sync failed",
@@ -52,6 +57,7 @@ class MedicineListViewModel(
                     }
                 }
                 is Resource.Loading -> {
+                    // Only show loading if we have no data yet
                     if (allMedicines.isEmpty()) {
                         _state.value = MedicineListState(isLoading = true)
                     }
@@ -76,16 +82,6 @@ class MedicineListViewModel(
     fun addToCart(medicine: Medicine, quantity: Int) {
         viewModelScope.launch {
             cartRepository.addToCart(medicine, quantity)
-        }
-    }
-
-    class Factory(
-        private val medicineRepository: MedicineRepository,
-        private val cartRepository: CartRepository
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return MedicineListViewModel(medicineRepository, cartRepository) as T
         }
     }
 }

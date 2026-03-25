@@ -41,9 +41,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import uk.ac.tees.mad.meetmeds.MeetMedsApplication
 import uk.ac.tees.mad.meetmeds.domain.model.AuthResult
 import uk.ac.tees.mad.meetmeds.presentation.navigation.Screen
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
@@ -51,14 +50,9 @@ import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 @Composable
 fun AuthScreen(
     navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
-
     val context = LocalContext.current
-    val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModel.Factory(
-            (context.applicationContext as MeetMedsApplication).container.authRepository
-        )
-    )
     val authState = viewModel.authState.value
     val resetPasswordState = viewModel.resetPasswordState.value
 
