@@ -12,8 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import uk.ac.tees.mad.meetmeds.MeetMedsApplication
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.presentation.navigation.Screen
 import uk.ac.tees.mad.meetmeds.util.Resource
@@ -23,9 +24,15 @@ import uk.ac.tees.mad.meetmeds.util.Resource
 fun CheckoutScreen(
     navController: NavController,
     prescriptionUri: String?,
-    viewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val viewModel: CheckoutViewModel = viewModel(
+        factory = CheckoutViewModel.Factory(
+            (context.applicationContext as MeetMedsApplication).container.cartRepository,
+            (context.applicationContext as MeetMedsApplication).container.orderRepository,
+            (context.applicationContext as MeetMedsApplication).container.firebaseAuth
+        )
+    )
     val orderState = viewModel.orderState.value
 
     // Handle Side Effects

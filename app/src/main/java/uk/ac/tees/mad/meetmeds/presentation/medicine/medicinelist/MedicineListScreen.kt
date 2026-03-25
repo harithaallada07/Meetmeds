@@ -50,22 +50,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import uk.ac.tees.mad.meetmeds.MeetMedsApplication
 import uk.ac.tees.mad.meetmeds.domain.model.Medicine
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
 @Composable
 fun MedicineListScreen(
     navController: NavController,
-    viewModel: MedicineListViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val viewModel: MedicineListViewModel = viewModel(
+        factory = MedicineListViewModel.Factory(
+            (context.applicationContext as MeetMedsApplication).container.medicineRepository,
+            (context.applicationContext as MeetMedsApplication).container.cartRepository
+        )
+    )
     val state = viewModel.state.value
     val searchQuery = viewModel.searchQuery.value
 

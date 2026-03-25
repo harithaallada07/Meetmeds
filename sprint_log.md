@@ -83,3 +83,31 @@ Outcome:
 
 
 
+Sprint 5 - Date
+
+User Story:
+As a developer, I want the project to build and run
+cleanly without Hilt so that the codebase is free of
+automatic dependency injection.
+
+Work Done:
+- Commit 9: refactor(screens): replace hiltViewModel() with manual factory in all screens
+  - Removed hiltViewModel() from AuthScreen and wired via AuthViewModel.Factory
+  - Removed hiltViewModel() from CartScreen and wired via CartViewModel.Factory
+  - Removed hiltViewModel() from MedicineListScreen and wired via MedicineListViewModel.Factory
+  - Removed hiltViewModel() from CheckoutScreen and wired via CheckoutViewModel.Factory
+  - Removed hiltViewModel() from OrderHistoryScreen and wired via OrderHistoryViewModel.Factory
+  - Each screen now pulls dependencies from AppContainer via LocalContext
+
+- Commit 10: build(gradle): remove Hilt dependencies and plugins from build files
+  - Removed hilt-android, hilt-android-compiler, hilt-navigation-compose from build.gradle.kts
+  - Removed Hilt plugin aliases from build.gradle.kts
+  - Replaced hilt-ksp plugin alias with direct KSP id() declaration for Room
+  - Removed Hilt version entries and library aliases from libs.versions.toml
+  - Migrated jvmTarget to compilerOptions DSL to fix deprecation warning
+
+Outcome:
+- All screens instantiate ViewModels using manual factories with zero Hilt involvement
+- Project builds with no Hilt dependencies or annotations anywhere in the codebase
+- AppContainer is the single source of truth for all dependencies across the app
+

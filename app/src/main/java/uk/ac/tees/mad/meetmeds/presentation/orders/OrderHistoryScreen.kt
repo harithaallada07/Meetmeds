@@ -21,12 +21,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import uk.ac.tees.mad.meetmeds.MeetMedsApplication
 import uk.ac.tees.mad.meetmeds.domain.model.Address
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.domain.model.Order
@@ -40,8 +42,15 @@ import java.util.Locale
 @Composable
 fun OrderHistoryScreen(
     navController: NavController,
-    viewModel: OrderHistoryViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
+    val viewModel: OrderHistoryViewModel = viewModel(
+        factory = OrderHistoryViewModel.Factory(
+            (context.applicationContext as MeetMedsApplication).container.orderRepository,
+            (context.applicationContext as MeetMedsApplication).container.authRepository
+        )
+    )
     val state = viewModel.state.value
     val logoutState = viewModel.logoutState.value
 

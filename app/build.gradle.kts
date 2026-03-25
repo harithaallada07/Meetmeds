@@ -2,10 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt.android)
     alias(libs.plugins.room.android)
-    alias(libs.plugins.hilt.ksp)
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp") version "2.3.0"
+
 }
 
 android {
@@ -78,13 +78,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-
-    //Firebase
-
-    //Dagger Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     //Room
     implementation(libs.androidx.room.runtime)

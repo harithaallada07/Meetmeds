@@ -20,13 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import uk.ac.tees.mad.meetmeds.MeetMedsApplication
 import uk.ac.tees.mad.meetmeds.domain.model.CartItem
 import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 
@@ -34,9 +36,14 @@ import uk.ac.tees.mad.meetmeds.presentation.theme.MeetMedsTheme
 @Composable
 fun CartScreen(
     navController: NavController,
-    viewModel: CartViewModel = hiltViewModel(),
     onCheckoutClick: (String?) -> Unit // CORRECT SIGNATURE: Accepts a String? (URI)
 ) {
+    val context = LocalContext.current
+    val viewModel: CartViewModel = viewModel(
+        factory = CartViewModel.Factory(
+            (context.applicationContext as MeetMedsApplication).container.cartRepository
+        )
+    )
     val cartItems = viewModel.cartItems.value
     val total = viewModel.totalPrice.value
     val prescriptionUri = viewModel.prescriptionUri.value
